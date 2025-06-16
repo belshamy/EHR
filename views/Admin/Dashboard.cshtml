@@ -1,0 +1,42 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+    var userName = Context.Session.GetString("UserName") ?? "Admin";
+}
+
+<div class="container mt-5">
+    <h2>Welcome, @userName!</h2>
+    <p class="lead">This is your admin control panel.</p>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Manage Users</h5>
+                    <p class="card-text">View, edit, or delete registered users.</p>
+                    <a href="/Admin/ManageUsers" class="btn btn-primary">Go</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-success">
+                <div class="card-body">
+                    <h5 class="card-title">Add New User</h5>
+                    <p class="card-text">Create a new Doctor or Patient account manually.</p>
+                    <a href="/Account/Register" class="btn btn-success">Register</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-secondary">
+                <div class="card-body">
+                    <h5 class="card-title">Logout</h5>
+                    <p class="card-text">End your current session securely.</p>
+                    <a href="/Account/Logout" class="btn btn-secondary">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

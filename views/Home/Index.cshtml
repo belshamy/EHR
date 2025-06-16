@@ -1,0 +1,255 @@
+@model EHRsystem.Models.ViewModels.DashboardViewModel  
+@{
+    ViewData["Title"] = "Medical Portal - EHR System";
+}
+
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4 text-primary">Your Health, Simplified.</h1>
+                <p class="lead mb-4 text-muted">
+                    Securely access your medical records, manage appointments, and stay connected with your healthcare providers.
+                </p>
+                <div class="d-flex gap-3 mb-4">
+                    @if (User?.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <a href="@Url.Action("Index", "Appointment")" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calendar-check me-2"></i>View Appointments
+                        </a>
+                        <a href="#dashboard" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-chart-line me-2"></i>Dashboard
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Login", "Account")" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                        <a href="@Url.Action("Register", "Account")" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-6 d-none d-lg-block text-center">
+                <img src="~/images/hero-doctor.png" alt="Doctor and Patient" class="img-fluid rounded-3 shadow-lg">
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (User?.Identity != null && User.Identity.IsAuthenticated)
+{
+    <div class="dashboard-section py-5" id="dashboard">
+        <div class="container">
+            <h2 class="text-center mb-5 text-primary">Your Dashboard Overview</h2>
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @ViewBag.ErrorMessage
+                </div>
+            }
+
+            <div class="row text-center mb-5">
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <i class="fas fa-user-injured fa-3x text-info mb-3"></i>
+                            <h5 class="card-title">Total Patients</h5>
+                            <p class="card-text fs-3 fw-bold">@Model.TotalPatients</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <i class="fas fa-user-md fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Total Doctors</h5>
+                            <p class="card-text fs-3 fw-bold">@Model.TotalDoctors</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <i class="fas fa-calendar-alt fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Total Appointments</h5>
+                            <p class="card-text fs-3 fw-bold">@Model.TotalAppointments</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <i class="fas fa-file-medical fa-3x text-danger mb-3"></i>
+                            <h5 class="card-title">Total Medical Records</h5>
+                            <p class="card-text fs-3 fw-bold">@Model.TotalMedicalRecords</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Recent Appointments</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.RecentAppointments != null && Model.RecentAppointments.Any())
+                            {
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var appt in Model.RecentAppointments)
+                                    {
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <strong>@appt.AppointmentDate.ToString("MMMM dd, yyyy hh:mm tt")</strong><br />
+                                                <small>Patient: @appt.PatientName - Doctor: @appt.DoctorName</small>
+                                            </div>
+                                            <span class="badge @(appt.Status == "Confirmed" ? "bg-success" : appt.Status == "Pending" ? "bg-warning text-dark" : "bg-danger")">
+                                                @appt.Status
+                                            </span>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No recent appointments.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Recent Medical Records</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.RecentMedicalRecords != null && Model.RecentMedicalRecords.Any())
+                            {
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var record in Model.RecentMedicalRecords)
+                                    {
+                                        <li class="list-group-item">
+                                            <strong>@record.RecordDate.ToString("MMMM dd, yyyy")</strong><br />
+                                            <small>Patient: @record.PatientName - Doctor: @record.DoctorName</small><br />
+                                            <small>Complaint: @record.ChiefComplaint</small>
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No recent medical records.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="features-section py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5 text-dark">Why Choose Our EHR System?</h2>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-shield-alt fa-4x text-primary mb-3"></i>
+                <h4 class="fw-bold">Secure & Private</h4>
+                <p class="text-muted">Your health data is protected with the highest encryption standards, ensuring privacy and compliance.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-mobile-alt fa-4x text-success mb-3"></i>
+                <h4 class="fw-bold">Accessible Anywhere</h4>
+                <p class="text-muted">Access your records from any device, anytime, ensuring your information is always at your fingertips.</p>
+            </div>
+            <div class="col-md-4 mb-4">
+                <i class="fas fa-sync-alt fa-4x text-info mb-3"></i>
+                <h4 class="fw-bold">Real-time Updates</h4>
+                <p class="text-muted">Get instant updates on appointments, test results, and medical records as they happen.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (User?.Identity == null || !User.Identity.IsAuthenticated)
+{
+    <div class="cta-section py-5">
+        <div class="container text-center text-white">
+            <h2 class="mb-4">Ready to Take Control of Your Health?</h2>
+            <p class="lead mb-4">Join our secure EHR system today and experience a seamless healthcare journey.</p>
+            <a href="@Url.Action("Register", "Account")" class="btn btn-light btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Sign Up Now
+            </a>
+        </div>
+    </div>
+}
+
+<style>
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(to right, #e0f2f7, #c1e4f2);
+        color: #333;
+    }
+    .hero-section h1 {
+        font-size: 3.5rem;
+        line-height: 1.2;
+    }
+    .hero-section p.lead {
+        font-size: 1.25rem;
+    }
+    .hero-section .img-fluid {
+        max-height: 500px;
+        object-fit: contain;
+    }
+
+    /* Dashboard Section */
+    .dashboard-section {
+        background-color: #f8f9fa;
+    }
+    .dashboard-section .card {
+        border-radius: 15px;
+        transition: transform 0.2s ease-in-out;
+    }
+    .dashboard-section .card:hover {
+        transform: translateY(-5px);
+    }
+    .dashboard-section .card-title {
+        font-weight: 600;
+        color: #343a40;
+    }
+
+    /* Features Section */
+    .features-section .fas {
+        color: #007bff; /* Primary color */
+    }
+    .features-section h4 {
+        margin-top: 15px;
+        font-weight: 700;
+    }
+
+    /* CTA Section */
+    .cta-section {
+        background: linear-gradient(135deg, #0d47a1 0%, #1a6fc4 100%);
+        color: white;
+    }
+</style>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <script>
+        // Smooth scroll for dashboard link
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+}

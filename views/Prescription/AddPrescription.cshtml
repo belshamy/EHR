@@ -1,0 +1,46 @@
+@model EHRsystem.Models.Entities.Prescription
+@{
+    ViewData["Title"] = "Add Prescription";
+}
+
+<h2>Add Prescription</h2>
+
+<form asp-action="AddPrescription" method="post">
+    <div class="form-group">
+        <label asp-for="PatientId"></label>
+        <input asp-for="PatientId" class="form-control" />
+        <span asp-validation-for="PatientId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Medication"></label>
+        <input asp-for="Medication" class="form-control" />
+        <span asp-validation-for="Medication" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Dosage"></label>
+        <input asp-for="Dosage" class="form-control" />
+        <span asp-validation-for="Dosage" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Frequency"></label>
+        <input asp-for="Frequency" class="form-control" />
+        <span asp-validation-for="Frequency" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Duration"></label>
+        <input asp-for="Duration" class="form-control" />
+        <span asp-validation-for="Duration" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Instructions"></label>
+        <textarea asp-for="Instructions" class="form-control"></textarea>
+        <span asp-validation-for="Instructions" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

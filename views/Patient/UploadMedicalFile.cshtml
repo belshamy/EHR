@@ -1,0 +1,66 @@
+@model EHRsystem.Models.Entities.MedicalFile
+
+@{
+    ViewData["Title"] = "Upload Medical File";
+}
+
+<h2>Upload Medical File</h2>
+
+<form asp-action="UploadMedicalFile" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="file">Choose File</label>
+        <input type="file" name="file" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="FileType">File Type</label>
+        <input asp-for="FileType" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Upload</button>
+    <a asp-action="MedicalRecords" class="btn btn-secondary">Cancel</a>
+</form>
+@{
+    ViewData["Title"] = "Upload Medical File";
+}
+
+<div class="container mt-5">
+    <h2>Upload Medical File</h2>
+
+    <form asp-action="UploadMedicalFile" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Choose File</label>
+            <input type="file" name="file" class="form-control-file" required />
+            @{
+                var fileModelState = ViewData.ModelState.ContainsKey("file") ? ViewData.ModelState["file"] : null;
+            }
+            @if (fileModelState != null && fileModelState.Errors != null && fileModelState.Errors.Count > 0)
+            {
+                var error = fileModelState.Errors?.FirstOrDefault();
+                if (error != null && !string.IsNullOrEmpty(error.ErrorMessage))
+                {
+                    <span class="text-danger">@error.ErrorMessage</span>
+                }
+            }
+        </div>
+
+        <div class="form-group">
+            <label for="FileType">File Type</label>
+            <input type="text" name="FileType" class="form-control" placeholder="e.g. Lab Report, Scan..." required />
+        </div>
+
+        <div class="form-group">
+            <label for="Description">Description</label>
+            <textarea name="Description" class="form-control" rows="3" placeholder="Optional notes..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Upload</button>
+        <a href="/Patient/MedicalRecords" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+

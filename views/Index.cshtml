@@ -1,0 +1,61 @@
+@model EHRsystem.Models.Entities.Patient
+@{
+    ViewData["Title"] = "Medical Portal - EHR System";
+}
+
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-6">
+                <!-- ... other content ... -->
+                <div class="d-flex gap-3 mb-4">
+                    @if (User?.Identity != null && User.Identity.IsAuthenticated)
+                    {  <!-- FIXED: Added brace -->
+                        <a href="@Url.Action("Index", "Appointment")" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calendar-check me-2"></i>View Appointments
+                        </a>
+                        <a href="#dashboard" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-chart-line me-2"></i>Dashboard
+                        </a>
+                    }
+                    else
+                    {  <!-- FIXED: Added brace -->
+                        <a href="@Url.Action("Login", "Account")" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login
+                        </a>
+                        <a href="@Url.Action("Register", "Account")" class="btn btn-outline-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </a>
+                    }
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <!-- ... hero image ... -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (User?.Identity != null && User.Identity.IsAuthenticated)
+{  <!-- FIXED: Added brace -->
+    <div class="dashboard-section py-5" id="dashboard">
+        <!-- ... dashboard content ... -->
+    </div>
+}  <!-- FIXED: Added closing brace -->
+
+<!-- ... features section ... -->
+
+@if (User?.Identity == null || !User.Identity.IsAuthenticated)
+{  <!-- FIXED: Added brace -->
+    <div class="cta-section py-5">
+        <!-- ... CTA content ... -->
+    </div>
+}  <!-- FIXED: Added closing brace -->
+
+<style>
+    /* ... your CSS ... */
+</style>
+
+<script>
+    // ... your JavaScript ...
+</script>

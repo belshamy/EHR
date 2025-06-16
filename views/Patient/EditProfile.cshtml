@@ -1,0 +1,11 @@
+@model EHRsystem.Models.Entities.Patient
+
+<h2>Edit Profile</h2>
+<form asp-action="EditProfile">
+    <input type="hidden" asp-for="PatientId" />
+    <label asp-for="Email">Email</label>
+    <input asp-for="Email" />
+    <label asp-for="DateOfBirth">Date of Birth</label>
+    <input asp-for="DateOfBirth" />
+    <input type="submit" value="Save" />
+</form>

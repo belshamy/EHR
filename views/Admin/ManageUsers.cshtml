@@ -1,0 +1,20 @@
+@model IEnumerable<EHRsystem.Models.Entities.ApplicationUser>
+<h2>Manage Users</h2>
+<table>
+    <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Actions</th>
+    </tr>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.UserName</td>
+            <td>@user.Email</td>
+            <td>
+                <a asp-action="EditUser" asp-route-id="@user.Id">Edit</a>
+                <a asp-action="DeleteUser" asp-route-id="@user.Id">Delete</a>
+            </td>
+        </tr>
+    }
+</table>

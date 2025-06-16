@@ -1,0 +1,18 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+:root {
+    --primary-color: #2c5aa0; /* Darker Blue */
+    --secondary-color: #28a745; /* Green */
+    --accent-color: #17a2b8; /* Teal */
+    --danger-color: #dc3545; /* Red */
+    --warning-color: #ffc107; /* Orange */
+    --light-bg: #f8f9fa; /* Light Grey */
+    --dark-text: #333; /* Dark Grey */
+}

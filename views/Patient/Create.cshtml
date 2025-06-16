@@ -1,0 +1,38 @@
+using EHRsystem.Models.Entities;
+using Microsoft.AspNetCore.Mvc;
+
+namespace EHRsystem.Controllers
+{
+    public class PatientController : Controller
+    {
+        [HttpGet]
+        public IActionResult Create()
+        {
+            ViewBag.Governorates = new SelectList(new[]
+            {
+                "Governorate1",
+                "Governorate2",
+                "Governorate3"
+            });
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Create(Patient patient)
+        {
+            if (ModelState.IsValid)
+            {
+                // Save patient to database
+                return RedirectToAction("Index");
+            }
+            ViewBag.Governorates = new SelectList(new[]
+            {
+                "Governorate1",
+                "Governorate2",
+                "Governorate3"
+            });
+            return View(patient);
+        }
+    }
+}
+

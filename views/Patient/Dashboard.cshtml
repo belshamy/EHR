@@ -1,0 +1,16 @@
+    using System.Collections.Generic;
+    using EHRsystem.Models.Entities; // Needed if you reference entities directly
+    // Make sure to include the namespace for other ViewModels if they are in a different file
+    // using EHRsystem.ViewModels; // Uncomment if HealthSummaryViewModel, AppointmentViewModel are in a different namespace/file
+
+    namespace EHRsystem.ViewModels
+    {
+        public class PatientDashboardViewModel
+        {
+            // Initialized to prevent CS8618 warnings
+            public List<AppointmentViewModel> UpcomingAppointments { get; set; } = new List<AppointmentViewModel>(); 
+            public HealthSummaryViewModel HealthSummary { get; set; } = new HealthSummaryViewModel();
+            // Add any other properties this ViewModel is expected to have and initialize them
+        }
+    }
+    

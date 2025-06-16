@@ -1,0 +1,176 @@
+/* _content/EHRsystem/views/Shared/_Layout.cshtml.rz.scp.css */
+:root[b-ve0xj6ds4f] {
+    --primary-color: #2c5aa0;
+    --secondary-color: #28a745;
+    --accent-color: #17a2b8;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --light-bg: #f8f9fa;
+    --dark-text: #333;
+}
+
+body[b-ve0xj6ds4f] {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--light-bg);
+    color: var(--dark-text);
+}
+
+.navbar-brand[b-ve0xj6ds4f] {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.navbar[b-ve0xj6ds4f] {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1e3c72 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 1rem 0;
+}
+
+.navbar-nav .nav-link[b-ve0xj6ds4f] {
+    color: rgba(255,255,255,0.9) !important;
+    font-weight: 500;
+    margin: 0 0.5rem;
+    padding: 0.5rem 1rem !important;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover[b-ve0xj6ds4f] {
+    background-color: rgba(255,255,255,0.1);
+    color: white !important;
+}
+
+.navbar-nav .nav-link.active[b-ve0xj6ds4f] {
+    background-color: rgba(255,255,255,0.2);
+    color: white !important;
+}
+
+.navbar-brand[b-ve0xj6ds4f] {
+    color: white !important;
+}
+
+.navbar-toggler[b-ve0xj6ds4f] {
+    border-color: rgba(255,255,255,0.3);
+}
+
+.navbar-toggler-icon[b-ve0xj6ds4f] {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.user-info[b-ve0xj6ds4f] {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+}
+
+.dropdown-menu[b-ve0xj6ds4f] {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.dropdown-item[b-ve0xj6ds4f] {
+    padding: 0.7rem 1.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover[b-ve0xj6ds4f] {
+    background-color: var(--light-bg);
+}
+
+.main-content[b-ve0xj6ds4f] {
+    min-height: calc(100vh - 140px);
+    padding-top: 2rem;
+}
+
+.footer[b-ve0xj6ds4f] {
+    background: linear-gradient(135deg, #1e3c72 0%, var(--primary-color) 100%);
+    color: white;
+    padding: 2rem 0 1rem 0;
+    margin-top: auto;
+}
+
+.footer a[b-ve0xj6ds4f] {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover[b-ve0xj6ds4f] {
+    color: white;
+}
+
+.status-indicator[b-ve0xj6ds4f] {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.status-online[b-ve0xj6ds4f] { 
+    background-color: var(--secondary-color); 
+}
+
+.status-busy[b-ve0xj6ds4f] { 
+    background-color: var(--danger-color); 
+}
+
+.status-away[b-ve0xj6ds4f] { 
+    background-color: var(--warning-color); 
+}
+
+.notification-badge[b-ve0xj6ds4f] {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--danger-color);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-icon[b-ve0xj6ds4f] {
+    position: relative;
+    display: inline-block;
+}
+
+@media (max-width: 991px) {
+    .navbar-nav[b-ve0xj6ds4f] {
+        padding-top: 1rem;
+    }
+    
+    .user-info[b-ve0xj6ds4f] {
+        margin-left: 0;
+        margin-top: 1rem;
+        text-align: center;
+    }
+}
+
+.breadcrumb[b-ve0xj6ds4f] {
+    background-color: transparent;
+    padding: 1rem 0;
+}
+
+.breadcrumb-item + .breadcrumb-item[b-ve0xj6ds4f]::before {
+    content: ">";
+    color: var(--primary-color);
+}
+
+.btn-primary[b-ve0xj6ds4f] {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #1e3c72 100%);
+    border: none;
+    border-radius: 5px;
+}
+
+.btn-primary:hover[b-ve0xj6ds4f] {
+    background: linear-gradient(135deg, #1e3c72 0%, var(--primary-color) 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}

@@ -1,0 +1,9 @@
+F:\EHRsystem\EHRSystem.Data\bin\Debug\net8.0\EHRSystem.Data.deps.json
+F:\EHRsystem\EHRSystem.Data\bin\Debug\net8.0\EHRSystem.Data.dll
+F:\EHRsystem\EHRSystem.Data\bin\Debug\net8.0\EHRSystem.Data.pdb
+F:\EHRsystem\EHRSystem.Data\obj\Debug\net8.0\EHRSystem.Data.GeneratedMSBuildEditorConfig.editorconfig
+F:\EHRsystem\EHRSystem.Data\obj\Debug\net8.0\EHRSystem.Data.csproj.CoreCompileInputs.cache
+F:\EHRsystem\EHRSystem.Data\obj\Debug\net8.0\EHRSystem.Data.dll
+F:\EHRsystem\EHRSystem.Data\obj\Debug\net8.0\refint\EHRSystem.Data.dll
+F:\EHRsystem\EHRSystem.Data\obj\Debug\net8.0\EHRSystem.Data.pdb
+F:\EHRsystem\EHRSystem.Data\obj\Debug\net8.0\ref\EHRSystem.Data.dll

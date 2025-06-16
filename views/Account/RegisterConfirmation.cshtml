@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "Registration Confirmation";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title">@ViewData["Title"]</h3>
+        </div>
+        <div class="card-body">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle-fill"></i> @TempData["SuccessMessage"]
+                </div>
+            }
+            @if (TempData["WarningMessage"] != null)
+            {
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle-fill"></i> @TempData["WarningMessage"]
+                </div>
+            }
+            
+            <div class="alert alert-info">
+                <i class="bi bi-envelope-fill"></i> 
+                Please check your email to confirm your account. 
+                This step is required before you can log in.
+            </div>
+            
+            <div class="mt-4">
+                <p>Didn't receive the email?</p>
+                <ul>
+                    <li>Check your spam folder</li>
+                    <li>Ensure you entered the correct email address</li>
+                    <li>
+                        <a asp-action="ResendConfirmation" asp-route-email="@TempData["Email"]" 
+                           class="btn btn-outline-primary">
+                            Resend Confirmation Email
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
