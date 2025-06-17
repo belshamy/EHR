@@ -1,255 +1,338 @@
-@model EHRsystem.Models.ViewModels.DashboardViewModel  
-@{
-    ViewData["Title"] = "Medical Portal - EHR System";
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Health Portal - Home</title>
+    <!-- Tailwind CSS CDN for easy integration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Light background, adjust to your site's primary background color */
+            color: #334155; /* Default text color, adjust to your site's primary text color */
+        }
+       
+        .btn-primary {
+            background-color: #3b82f6; /* bg-blue-600 */
+            color: #ffffff; /* text-white */
+            padding-left: 1.5rem; /* px-6 */
+            padding-right: 1.5rem; /* px-6 */
+            padding-top: 0.75rem; /* py-3 */
+            padding-bottom: 0.75rem; /* py-3 */
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 700; /* font-bold */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            transition-property: background-color;
+            transition-duration: 300ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary:hover {
+            background-color: #2563eb; /* hover:bg-blue-700 */
+        }
 
-<div class="hero-section">
-    <div class="container">
-        <div class="row align-items-center min-vh-75">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4 text-primary">Your Health, Simplified.</h1>
-                <p class="lead mb-4 text-muted">
-                    Securely access your medical records, manage appointments, and stay connected with your healthcare providers.
-                </p>
-                <div class="d-flex gap-3 mb-4">
-                    @if (User?.Identity != null && User.Identity.IsAuthenticated)
-                    {
-                        <a href="@Url.Action("Index", "Appointment")" class="btn btn-primary btn-lg">
-                            <i class="fas fa-calendar-check me-2"></i>View Appointments
+        .btn-secondary {
+            border-width: 1px;
+            border-color: #3b82f6; /* border-blue-600 */
+            color: #3b82f6; /* text-blue-600 */
+            padding-left: 1.5rem; /* px-6 */
+            padding-right: 1.5rem; /* px-6 */
+            padding-top: 0.75rem; /* py-3 */
+            padding-bottom: 0.75rem; /* py-3 */
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 700; /* font-bold */
+            transition-property: background-color;
+            transition-duration: 300ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-secondary:hover {
+            background-color: #eff6ff; /* hover:bg-blue-50 */
+        }
+
+        .btn-solid-white {
+            background-color: #ffffff; /* bg-white */
+            color: #1d4ed8; /* text-blue-700 */
+            padding-left: 1.5rem; /* px-6 */
+            padding-right: 1.5rem; /* px-6 */
+            padding-top: 0.75rem; /* py-3 */
+            padding-bottom: 0.75rem; /* py-3 */
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 700; /* font-bold */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            transition-property: background-color;
+            transition-duration: 300ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-solid-white:hover {
+            background-color: #f3f4f6; /* hover:bg-gray-100 */
+        }
+
+        .btn-outline-white {
+            border-width: 1px;
+            border-color: #ffffff; /* border-white */
+            color: #ffffff; /* text-white */
+            padding-left: 1.5rem; /* px-6 */
+            padding-right: 1.5rem; /* px-6 */
+            padding-top: 0.75rem; /* py-3 */
+            padding-bottom: 0.75rem; /* py-3 */
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 700; /* font-bold */
+            transition-property: background-color, color;
+            transition-duration: 300ms;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-outline-white:hover {
+            background-color: #ffffff; /* hover:bg-white */
+            color: #1d4ed8; /* hover:text-blue-700 */
+        }
+
+        /* Custom scroll-to-top button styles */
+        #scrollToTopBtn {
+            display: none; /* Hidden by default */
+            position: fixed; /* Fixed/sticky position */
+            bottom: 20px; /* Place the button at the bottom of the page */
+            right: 30px; /* Place the button 30px from the right */
+            z-index: 99; /* Make sure it does not overlap */
+            border: none; /* Remove borders */
+            outline: none; /* Remove outline */
+            background-color: #1a73e8; /* A vibrant blue, replace with your accent color */
+            color: white; /* Text color */
+            cursor: pointer; /* Add a mouse pointer on hover */
+            padding: 10px 15px; /* Some padding */
+            border-radius: 8px; /* Rounded corners */
+            font-size: 1.5rem; /* Large icon */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        #scrollToTopBtn:hover {
+            background-color: #155bb5; /* Darker shade on hover, adjust to your accent color's hover state */
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Header/Navigation Bar -->
+    <header class="bg-white shadow-sm py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <a href="/Home" class="text-2xl font-bold text-blue-700">YourHealth</a> <!-- Adjust text-blue-700 to your primary brand color -->
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="/Home" class="text-gray-700 hover:text-blue-600 font-medium">Home</a></li>
+                    <li><a href="/Services" class="text-gray-700 hover:text-blue-600 font-medium">Services</a></li>
+                    <li><a href="/Doctors" class="text-gray-700 hover:text-blue-600 font-medium">Doctors</a></li>
+                    <li><a href="/About" class="text-gray-700 hover:text-blue-600 font-medium">About Us</a></li>
+                    <li><a href="/Contact" class="text-gray-700 hover:text-blue-600 font-medium">Contact</a></li>
+                    <li><a href="/PatientPortal" class="btn-primary">Patient Portal</a></li> <!-- Applied btn-primary -->
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative bg-gradient-to-r from-blue-700 to-blue-500 text-white py-20 px-4 overflow-hidden rounded-bl-3xl rounded-br-3xl mb-12">
+            <!-- Background Circles/Shapes for visual interest -->
+            <div class="absolute top-0 -left-20 w-80 h-80 bg-blue-400 opacity-20 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+            <div class="absolute -bottom-10 right-0 w-96 h-96 bg-blue-300 opacity-20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+            <div class="absolute -top-10 right-40 w-72 h-72 bg-blue-200 opacity-20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+
+
+            <div class="container mx-auto flex flex-col md:flex-row items-center justify-between relative z-10">
+                <div class="md:w-1/2 text-center md:text-left mb-8 md:mb-0">
+                    <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
+                        Your <span class="text-blue-200">Health</span>, Our Priority.
+                    </h1>
+                    <p class="text-lg opacity-90 mb-8 max-w-lg mx-auto md:mx-0">
+                        Seamlessly manage your appointments, access medical records, and connect with trusted healthcare professionals.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                        <a href="/Appointment" class="btn-solid-white">
+                            Book an Appointment
                         </a>
-                        <a href="#dashboard" class="btn btn-outline-primary btn-lg">
-                            <i class="fas fa-chart-line me-2"></i>Dashboard
+                        <a href="/Doctors" class="btn-outline-white">
+                            Find a Doctor
                         </a>
-                    }
-                    else
-                    {
-                        <a href="@Url.Action("Login", "Account")" class="btn btn-primary btn-lg">
-                            <i class="fas fa-sign-in-alt me-2"></i>Login
-                        </a>
-                        <a href="@Url.Action("Register", "Account")" class="btn btn-outline-primary btn-lg">
-                            <i class="fas fa-user-plus me-2"></i>Register
-                        </a>
-                    }
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <!-- Placeholder for an image or illustration -->
+                    <img src="https://placehold.co/500x350/E0F2F7/0D47A1?text=Modern+Health+Illustration" alt="Health Illustration" class="rounded-xl shadow-2xl max-w-full h-auto">
                 </div>
             </div>
-            <div class="col-lg-6 d-none d-lg-block text-center">
-                <img src="~/images/hero-doctor.png" alt="Doctor and Patient" class="img-fluid rounded-3 shadow-lg">
+        </section>
+
+        <!-- Features/Services Section -->
+        <section class="container mx-auto px-4 py-16">
+            <h2 class="text-4xl font-bold text-center mb-12 text-gray-800">Our Comprehensive Services</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature Card 1 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center text-center border-t-4 border-blue-600">
+                    <div class="bg-blue-100 text-blue-700 rounded-full p-4 mb-4 text-3xl">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-800">Easy Appointments</h3>
+                    <p class="text-gray-600">Schedule, reschedule, or cancel appointments with ease, 24/7.</p>
+                    <a href="/Appointment" class="text-blue-600 hover:underline mt-4 font-medium">Learn More <i class="fas fa-arrow-right text-sm"></i></a>
+                </div>
+                <!-- Feature Card 2 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center text-center border-t-4 border-emerald-600">
+                    <div class="bg-emerald-100 text-emerald-700 rounded-full p-4 mb-4 text-3xl">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-800">Secure Medical Records</h3>
+                    <p class="text-gray-600">Access your complete health history, prescriptions, and lab results securely.</p>
+                    <a href="/MedicalRecords" class="text-emerald-600 hover:underline mt-4 font-medium">Learn More <i class="fas fa-arrow-right text-sm"></i></a>
+                </div>
+                <!-- Feature Card 3 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center text-center border-t-4 border-purple-600">
+                    <div class="bg-purple-100 text-purple-700 rounded-full p-4 mb-4 text-3xl">
+                        <i class="fas fa-comments-medical"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-800">Telehealth Consults</h3>
+                    <p class="text-gray-600">Connect with doctors remotely for convenient and safe consultations.</p>
+                    <a href="/Telehealth" class="text-purple-600 hover:underline mt-4 font-medium">Learn More <i class="fas fa-arrow-right text-sm"></i></a>
+                </div>
+                <!-- Feature Card 4 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center text-center border-t-4 border-red-600">
+                    <div class="bg-red-100 text-red-700 rounded-full p-4 mb-4 text-3xl">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-800">Lab Results Online</h3>
+                    <p class="text-gray-600">View your diagnostic test results as soon as they are available.</p>
+                    <a href="/LabResults" class="text-red-600 hover:underline mt-4 font-medium">Learn More <i class="fas fa-arrow-right text-sm"></i></a>
+                </div>
+                <!-- Feature Card 5 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center text-center border-t-4 border-yellow-600">
+                    <div class="bg-yellow-100 text-yellow-700 rounded-full p-4 mb-4 text-3xl">
+                        <i class="fas fa-prescription-bottle-alt"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-800">Prescription Management</h3>
+                    <p class="text-gray-600">Request refills and manage your medications easily through the portal.</p>
+                    <a href="/Prescriptions" class="text-yellow-600 hover:underline mt-4 font-medium">Learn More <i class="fas fa-arrow-right text-sm"></i></a>
+                </div>
+                <!-- Feature Card 6 -->
+                <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow flex flex-col items-center text-center border-t-4 border-teal-600">
+                    <div class="bg-teal-100 text-teal-700 rounded-full p-4 mb-4 text-3xl">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-gray-800">Find Your Doctor</h3>
+                    <p class="text-gray-600">Search our comprehensive directory of certified healthcare providers.</p>
+                    <a href="/Doctors" class="text-teal-600 hover:underline mt-4 font-medium">Learn More <i class="fas fa-arrow-right text-sm"></i></a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us Section -->
+        <section class="bg-gray-50 px-4 py-20 rounded-tl-3xl rounded-tr-3xl">
+            <div class="container mx-auto flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/2">
+                    <img src="https://placehold.co/600x400/E0F7FA/00796B?text=Caring+Team" alt="About Us" class="rounded-xl shadow-xl max-w-full h-auto">
+                </div>
+                <div class="md:w-1/2 text-center md:text-left">
+                    <span class="text-blue-600 font-semibold text-lg mb-3 block">About Us</span>
+                    <h2 class="text-4xl font-bold mb-6 text-gray-800">Committed to Your Wellbeing</h2>
+                    <p class="text-gray-600 text-lg mb-6">
+                        At YourHealth, we believe in empowering you with easy, secure access to your health information and healthcare providers. Our platform is designed to simplify your healthcare journey.
+                    </p>
+                    <ul class="text-gray-600 space-y-3 mb-8">
+                        <li><i class="fas fa-check-circle text-blue-600 mr-2"></i> HIPAA Compliant Security</li>
+                        <li><i class="fas fa-check-circle text-blue-600 mr-2"></i> User-Friendly Interface</li>
+                        <li><i class="fas fa-check-circle text-blue-600 mr-2"></i> Dedicated Support Team</li>
+                    </ul>
+                    <a href="/About" class="btn-primary">
+                        Learn More About Us
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Call to Action Section -->
+        <section class="bg-blue-800 text-white py-20 px-4 text-center rounded-bl-3xl rounded-br-3xl mt-12">
+            <h2 class="text-4xl font-bold mb-6">Ready to Take Control of Your Health?</h2>
+            <p class="text-lg opacity-90 mb-10 max-w-3xl mx-auto">
+                Join thousands of satisfied patients who are simplifying their healthcare experience with YourHealth Portal.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/Register" class="btn-solid-white">
+                    Get Started Today
+                </a>
+                <a href="/Contact" class="btn-outline-white">
+                    Contact Support
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 px-4 mt-12">
+        <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-xl font-bold mb-4 text-blue-300">YourHealth</h3>
+                <p class="text-gray-400 text-sm">Simplifying your healthcare journey.</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="https://facebook.com/yourhealth" target="_blank" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/yourhealth" target="_blank" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                    <a href="https://linkedin.com/company/yourhealth" target="_blank" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                <ul class="space-y-2">
+                    <li><a href="/Services" class="text-gray-400 hover:text-white text-sm">Services</a></li>
+                    <li><a href="/Doctors" class="text-gray-400 hover:text-white text-sm">Find a Doctor</a></li>
+                    <li><a href="/PatientPortal" class="text-gray-400 hover:text-white text-sm">Patient Portal</a></li>
+                    <li><a href="/FAQ" class="text-gray-400 hover:text-white text-sm">FAQs</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Support</h3>
+                <ul class="space-y-2">
+                    <li><a href="/Contact" class="text-gray-400 hover:text-white text-sm">Contact Us</a></li>
+                    <li><a href="/PrivacyPolicy" class="text-gray-400 hover:text-white text-sm">Privacy Policy</a></li>
+                    <li><a href="/TermsOfService" class="text-gray-400 hover:text-white text-sm">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                <p class="text-gray-400 text-sm">7 Ramses St., Downtown, Cairo, Egypt</p>
+                <p class="text-gray-400 text-sm">info.egypt@yourhealth.com</p>
+                <p class="text-gray-400 text-sm">+20 2 1234 5678</p>
             </div>
         </div>
-    </div>
-</div>
+        <div class="text-center text-gray-500 text-sm mt-12 border-t border-gray-700 pt-8">
+            &copy; 2023 YourHealth Portal. All rights reserved.
+        </div>
+    </footer>
 
-@if (User?.Identity != null && User.Identity.IsAuthenticated)
-{
-    <div class="dashboard-section py-5" id="dashboard">
-        <div class="container">
-            <h2 class="text-center mb-5 text-primary">Your Dashboard Overview</h2>
-            @if (ViewBag.ErrorMessage != null)
-            {
-                <div class="alert alert-danger" role="alert">
-                    @ViewBag.ErrorMessage
-                </div>
+    <!-- Scroll to Top Button -->
+    <button id="scrollToTopBtn" title="Go to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // JavaScript for Scroll-to-Top Button
+        const scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+        // When the user scrolls down 20px from the top of the document, show the button
+        window.onscroll = function() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                scrollToTopBtn.style.display = "block";
+            } else {
+                scrollToTopBtn.style.display = "none";
             }
+        };
 
-            <div class="row text-center mb-5">
-                <div class="col-md-3">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body">
-                            <i class="fas fa-user-injured fa-3x text-info mb-3"></i>
-                            <h5 class="card-title">Total Patients</h5>
-                            <p class="card-text fs-3 fw-bold">@Model.TotalPatients</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body">
-                            <i class="fas fa-user-md fa-3x text-success mb-3"></i>
-                            <h5 class="card-title">Total Doctors</h5>
-                            <p class="card-text fs-3 fw-bold">@Model.TotalDoctors</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body">
-                            <i class="fas fa-calendar-alt fa-3x text-warning mb-3"></i>
-                            <h5 class="card-title">Total Appointments</h5>
-                            <p class="card-text fs-3 fw-bold">@Model.TotalAppointments</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="card h-100 shadow-sm border-0">
-                        <div class="card-body">
-                            <i class="fas fa-file-medical fa-3x text-danger mb-3"></i>
-                            <h5 class="card-title">Total Medical Records</h5>
-                            <p class="card-text fs-3 fw-bold">@Model.TotalMedicalRecords</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-lg-6 mb-4">
-                    <div class="card shadow-sm border-0 h-100">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">Recent Appointments</h5>
-                        </div>
-                        <div class="card-body">
-                            @if (Model.RecentAppointments != null && Model.RecentAppointments.Any())
-                            {
-                                <ul class="list-group list-group-flush">
-                                    @foreach (var appt in Model.RecentAppointments)
-                                    {
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <strong>@appt.AppointmentDate.ToString("MMMM dd, yyyy hh:mm tt")</strong><br />
-                                                <small>Patient: @appt.PatientName - Doctor: @appt.DoctorName</small>
-                                            </div>
-                                            <span class="badge @(appt.Status == "Confirmed" ? "bg-success" : appt.Status == "Pending" ? "bg-warning text-dark" : "bg-danger")">
-                                                @appt.Status
-                                            </span>
-                                        </li>
-                                    }
-                                </ul>
-                            }
-                            else
-                            {
-                                <p class="text-muted">No recent appointments.</p>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-6 mb-4">
-                    <div class="card shadow-sm border-0 h-100">
-                        <div class="card-header bg-success text-white">
-                            <h5 class="mb-0">Recent Medical Records</h5>
-                        </div>
-                        <div class="card-body">
-                            @if (Model.RecentMedicalRecords != null && Model.RecentMedicalRecords.Any())
-                            {
-                                <ul class="list-group list-group-flush">
-                                    @foreach (var record in Model.RecentMedicalRecords)
-                                    {
-                                        <li class="list-group-item">
-                                            <strong>@record.RecordDate.ToString("MMMM dd, yyyy")</strong><br />
-                                            <small>Patient: @record.PatientName - Doctor: @record.DoctorName</small><br />
-                                            <small>Complaint: @record.ChiefComplaint</small>
-                                        </li>
-                                    }
-                                </ul>
-                            }
-                            else
-                            {
-                                <p class="text-muted">No recent medical records.</p>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-}
-
-<div class="features-section py-5 bg-light">
-    <div class="container">
-        <h2 class="text-center mb-5 text-dark">Why Choose Our EHR System?</h2>
-        <div class="row text-center">
-            <div class="col-md-4 mb-4">
-                <i class="fas fa-shield-alt fa-4x text-primary mb-3"></i>
-                <h4 class="fw-bold">Secure & Private</h4>
-                <p class="text-muted">Your health data is protected with the highest encryption standards, ensuring privacy and compliance.</p>
-            </div>
-            <div class="col-md-4 mb-4">
-                <i class="fas fa-mobile-alt fa-4x text-success mb-3"></i>
-                <h4 class="fw-bold">Accessible Anywhere</h4>
-                <p class="text-muted">Access your records from any device, anytime, ensuring your information is always at your fingertips.</p>
-            </div>
-            <div class="col-md-4 mb-4">
-                <i class="fas fa-sync-alt fa-4x text-info mb-3"></i>
-                <h4 class="fw-bold">Real-time Updates</h4>
-                <p class="text-muted">Get instant updates on appointments, test results, and medical records as they happen.</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-@if (User?.Identity == null || !User.Identity.IsAuthenticated)
-{
-    <div class="cta-section py-5">
-        <div class="container text-center text-white">
-            <h2 class="mb-4">Ready to Take Control of Your Health?</h2>
-            <p class="lead mb-4">Join our secure EHR system today and experience a seamless healthcare journey.</p>
-            <a href="@Url.Action("Register", "Account")" class="btn btn-light btn-lg">
-                <i class="fas fa-user-plus me-2"></i>Sign Up Now
-            </a>
-        </div>
-    </div>
-}
-
-<style>
-    /* Hero Section */
-    .hero-section {
-        background: linear-gradient(to right, #e0f2f7, #c1e4f2);
-        color: #333;
-    }
-    .hero-section h1 {
-        font-size: 3.5rem;
-        line-height: 1.2;
-    }
-    .hero-section p.lead {
-        font-size: 1.25rem;
-    }
-    .hero-section .img-fluid {
-        max-height: 500px;
-        object-fit: contain;
-    }
-
-    /* Dashboard Section */
-    .dashboard-section {
-        background-color: #f8f9fa;
-    }
-    .dashboard-section .card {
-        border-radius: 15px;
-        transition: transform 0.2s ease-in-out;
-    }
-    .dashboard-section .card:hover {
-        transform: translateY(-5px);
-    }
-    .dashboard-section .card-title {
-        font-weight: 600;
-        color: #343a40;
-    }
-
-    /* Features Section */
-    .features-section .fas {
-        color: #007bff; /* Primary color */
-    }
-    .features-section h4 {
-        margin-top: 15px;
-        font-weight: 700;
-    }
-
-    /* CTA Section */
-    .cta-section {
-        background: linear-gradient(135deg, #0d47a1 0%, #1a6fc4 100%);
-        color: white;
-    }
-</style>
-
-@section Scripts {
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> <script>
-        // Smooth scroll for dashboard link
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
-                });
+        // When the user clicks on the button, scroll to the top of the document
+        scrollToTopBtn.addEventListener("click", function() {
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
             });
         });
     </script>
-}
+</body>
+</html>

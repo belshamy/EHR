@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Locked Out";
+}
+
+<div class="container mt-5 text-center">
+    <h1 class="text-danger">Locked Out</h1>
+    <hr />
+    <p class="text-warning">
+        This account has been locked out, possibly due to too many failed login attempts.
+        Please try again after some time or contact the administrator for assistance.
+    </p>
+    <p>
+        <a asp-action="Login" asp-controller="Account" class="btn btn-primary">Return to Login</a>
+    </p>
+</div>

@@ -1,16 +1,28 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using EHRsystem.Models.Entities;
+using EHRsystem.Models;
 using EHRsystem.Data;
-using System.Security.Claims;
+using EHRsystem.Models.Entities;
 using EHRsystem.Models.ViewModels;
 using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging; 
-using EHRsystem.Services; 
+using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
+
+// Define a placeholder IEmailSender if you don't have one configured yet,
+// or ensure your actual IEmailSender service is correctly implemented and injected in Program.cs.
+public interface IEmailSender
+{
+    Task SendConfirmationEmail(string email, string callbackUrl);
+    Task SendPasswordResetEmail(string email, string callbackUrl);
+}
 
 namespace EHRsystem.Controllers
 {
@@ -19,36 +31,44 @@ namespace EHRsystem.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<AccountController> _logger;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailSender _emailSender; // Keeping this for other email functionalities like password reset
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             RoleManager<IdentityRole> roleManager,
-            ApplicationDbContext context,
+            ApplicationDbContext dbContext,
             ILogger<AccountController> logger,
             IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
-            _context = context;
+            _dbContext = dbContext;
             _logger = logger;
             _emailSender = emailSender;
         }
+
+        // New action: User chooses Doctor or Patient role
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ChooseRole()
+        {
+            return View();
+        }
+
 
         #region Login/Logout
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string? returnUrl = null)
+        public async Task<IActionResult> Login(string? returnUrl = null, string? role = null)
         {
-            // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
             ViewData["ReturnUrl"] = returnUrl;
+            ViewData["RoleContext"] = role; // Pass role context to the view if needed for display
             return View();
         }
 
@@ -58,6 +78,10 @@ namespace EHRsystem.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+            // The 'role' parameter from the URL is not typically used in the POST Login logic,
+            // as role-based redirection happens after successful authentication via RedirectBasedOnRole.
+            // If you need to enforce a specific role login, you'd add logic here.
+
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
@@ -69,7 +93,6 @@ namespace EHRsystem.Controllers
                     return View(model);
                 }
 
-                // Check if account is active
                 if (!user.IsActive)
                 {
                     ModelState.AddModelError(string.Empty, "Your account has been deactivated. Please contact administrator.");
@@ -77,58 +100,66 @@ namespace EHRsystem.Controllers
                     return View(model);
                 }
 
-                // Check for account lockout
                 if (user.AccountLockedUntil.HasValue && user.AccountLockedUntil > DateTime.UtcNow)
                 {
                     ModelState.AddModelError(string.Empty,
                         $"Account is temporarily locked until {user.AccountLockedUntil.Value.ToLocalTime():yyyy-MM-dd HH:mm}. Please try again later.");
-                    await LogFailedLoginAttempt(model.Email, "Account locked");
+                    await LogFailedLoginAttempt(model.Email, "Account locked by custom logic");
                     return View(model);
                 }
 
                 var result = await _signInManager.PasswordSignInAsync(
-                    model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
+                    user.UserName!, model.Password, model.RememberMe, lockoutOnFailure: true);
 
                 if (result.Succeeded)
                 {
-                    // Update user login tracking
                     user.LastLogin = DateTime.UtcNow;
                     user.FailedLoginAttempts = 0;
                     user.AccountLockedUntil = null;
                     await _userManager.UpdateAsync(user);
 
-                    // Log successful login
                     await LogUserActivity(user.Id, "Login", "User logged in successfully");
                     _logger.LogInformation("User {Email} logged in successfully", model.Email);
 
-                    // Check if password change is required
                     if (user.RequiresPasswordChange)
                     {
                         TempData["InfoMessage"] = "You are required to change your password.";
-                        return RedirectToAction("ChangePassword");
+                        return RedirectToAction("ChangePassword", "Manage"); // Assuming you have this action in a ManageController
                     }
 
-                    // Redirect based on user role
                     var userRoles = await _userManager.GetRolesAsync(user);
                     return RedirectBasedOnRole(userRoles, returnUrl);
                 }
 
                 if (result.IsLockedOut)
                 {
-                    // Handle lockout
-                    await LogFailedLoginAttempt(model.Email, "Account locked out by system");
+                    await LogFailedLoginAttempt(model.Email, "Account locked out by Identity system");
                     _logger.LogWarning("User {Email} account locked out", model.Email);
                     return RedirectToAction("Lockout");
                 }
+                else if (result.RequiresTwoFactor)
+                {
+                    _logger.LogWarning("User {Email} requires two-factor authentication", model.Email);
+                    ModelState.AddModelError(string.Empty, "Two-factor authentication is required.");
+                    return View(model);
+                }
+                else if (result.IsNotAllowed)
+                {
+                    var reason = "";
+                    if (!user.EmailConfirmed) reason = "Email not confirmed.";
+                    ModelState.AddModelError(string.Empty, $"Login not allowed. {reason}");
+                    await LogFailedLoginAttempt(model.Email, $"Login not allowed: {reason}");
+                    return View(model);
+                }
                 else
                 {
-                    // Record failed login attempt
                     if (user != null)
                     {
                         user.FailedLoginAttempts++;
                         if (user.FailedLoginAttempts >= 5)
                         {
                             user.AccountLockedUntil = DateTime.UtcNow.AddMinutes(15);
+                            _logger.LogWarning("User {Email} account custom-locked for 15 minutes due to multiple failed attempts.", user.Email);
                         }
                         await _userManager.UpdateAsync(user);
                     }
@@ -138,8 +169,6 @@ namespace EHRsystem.Controllers
                     return View(model);
                 }
             }
-
-            // If ModelState is not valid, return the view with validation errors
             return View(model);
         }
 
@@ -149,11 +178,13 @@ namespace EHRsystem.Controllers
         public async Task<IActionResult> Logout()
         {
             var userId = _userManager.GetUserId(User);
+            var userEmail = User.Identity?.Name;
+
             await _signInManager.SignOutAsync();
 
             if (!string.IsNullOrEmpty(userId))
             {
-                await LogUserActivity(userId, "Logout", "User logged out");
+                await LogUserActivity(userId, "Logout", $"User '{userEmail}' logged out");
                 _logger.LogInformation("User {UserId} logged out", userId);
             }
 
@@ -163,10 +194,83 @@ namespace EHRsystem.Controllers
 
         #endregion
 
-        #region Password Management
+        #region Registration
 
-        // You will need to add/paste your ChangePassword action here.
-        // If you have one, copy it from AccountController.old and paste here.
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Register(string? role = null) // Added optional role parameter
+        {
+            var model = new RegisterViewModel();
+            if (!string.IsNullOrEmpty(role))
+            {
+                ViewData["PreselectedRole"] = role; // Pass to view for display or hidden field
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model, string? returnUrl = null, string? preselectedRole = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["PreselectedRole"] = preselectedRole; // Pass back to view on validation failure
+
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Address = model.Address,
+                    PhoneNumber = model.PhoneNumber,
+                    CreatedDate = DateTime.UtcNow,
+                    LastLogin = DateTime.UtcNow,
+                    IsActive = true,
+                    EmailConfirmed = true // FIX: Automatically confirm email
+                };
+
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    string assignedRole = "User"; // Default role
+                    if (!string.IsNullOrEmpty(preselectedRole) && (preselectedRole == "Doctor" || preselectedRole == "Patient"))
+                    {
+                        assignedRole = preselectedRole;
+                    }
+                    else if (!await _roleManager.RoleExistsAsync("User"))
+                    {
+                         await _roleManager.CreateAsync(new IdentityRole("User"));
+                    }
+
+                    if (!await _roleManager.RoleExistsAsync(assignedRole))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole(assignedRole));
+                    }
+                    await _userManager.AddToRoleAsync(user, assignedRole);
+
+                    _logger.LogInformation("User created a new account with password and role {Role}.", assignedRole);
+                    await LogUserActivity(user.Id, "Registration", $"User registered successfully as {assignedRole}");
+
+                    // FIX: Removed email confirmation token generation and sending logic
+                    TempData["SuccessMessage"] = "Account created successfully! Please log in."; // FIX: Notification message
+                    return RedirectToAction("Login"); // FIX: Redirect directly to Login page
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+            return View(model);
+        }
+
+        #endregion
+
+        #region Password Management
 
         [HttpGet]
         [AllowAnonymous]
@@ -201,22 +305,14 @@ namespace EHRsystem.Controllers
                             await LogUserActivity(user.Id, "PasswordResetRequested", "Password reset requested");
                             _logger.LogInformation("Password reset email sent to {Email}", user.Email);
                         }
-                        else
-                        {
-                            _logger.LogError("Failed to generate callback URL for password reset");
-                            TempData["ErrorMessage"] = "Failed to generate reset link. Please try again later.";
-                        }
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "Failed to send password reset email to {Email}", user.Email);
-                        TempData["ErrorMessage"] = "Failed to send reset email. Please try again later.";
+                        _logger.LogError(ex, "Failed to send password reset email to {Email}", model.Email);
                     }
                 }
-
                 return RedirectToAction("ForgotPasswordConfirmation");
             }
-
             return View(model);
         }
 
@@ -234,11 +330,11 @@ namespace EHRsystem.Controllers
             if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
             {
                 _logger.LogWarning("Reset password attempted with missing token or email");
-                TempData["ErrorMessage"] = "Invalid password reset token.";
+                TempData["ErrorMessage"] = "Invalid password reset token or email.";
                 return RedirectToAction("Login");
             }
 
-            var model = new ResetPasswordViewModel { Code = token, Email = email }; // Mapped token to Code
+            var model = new ResetPasswordViewModel { Code = token, Email = email };
             return View(model);
         }
 
@@ -258,7 +354,7 @@ namespace EHRsystem.Controllers
                 return RedirectToAction("ResetPasswordConfirmation");
             }
 
-            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password); // Used model.Code
+            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
             if (result.Succeeded)
             {
                 user.RequiresPasswordChange = false;
@@ -285,20 +381,24 @@ namespace EHRsystem.Controllers
 
         #endregion
 
-        #region Helper Methods
+        #region Email Confirmation (Removed from Register, but keeping these actions if still linked elsewhere or for future use)
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string? userId, string? token)
         {
+            // This action might no longer be strictly needed for new registrations if EmailConfirmed is true by default
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
             {
+                TempData["ErrorMessage"] = "Invalid email confirmation link.";
                 return RedirectToAction("Index", "Home");
             }
 
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "User not found for confirmation.";
+                return NotFound($"Unable to load user with ID '{userId}'.");
             }
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
@@ -309,14 +409,15 @@ namespace EHRsystem.Controllers
                 return RedirectToAction("Login");
             }
 
-            TempData["ErrorMessage"] = "Error confirming your email. The link may have expired.";
-            return RedirectToAction("Register"); // Assuming you have a Register action
+            TempData["ErrorMessage"] = "Error confirming your email. The link may have expired or is invalid.";
+            return RedirectToAction("Register");
         }
 
         [HttpGet]
         [AllowAnonymous]
         public IActionResult RegisterConfirmation()
         {
+            // This view might become redundant if redirecting directly to Login
             return View();
         }
 
@@ -324,22 +425,23 @@ namespace EHRsystem.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ResendConfirmation(string? email)
         {
+            // This action might become redundant if EmailConfirmed is true by default for new users
             if (string.IsNullOrEmpty(email))
             {
-                TempData["ErrorMessage"] = "Email address is required";
+                TempData["ErrorMessage"] = "Email address is required to resend confirmation.";
                 return RedirectToAction("Register");
             }
 
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                TempData["ErrorMessage"] = "User not found";
+                TempData["ErrorMessage"] = "User not found with that email.";
                 return RedirectToAction("Register");
             }
 
             if (user.EmailConfirmed)
             {
-                TempData["InfoMessage"] = "Your email is already confirmed";
+                TempData["InfoMessage"] = "Your email is already confirmed.";
                 return RedirectToAction("Login");
             }
 
@@ -355,20 +457,32 @@ namespace EHRsystem.Controllers
                 {
                     await _emailSender.SendConfirmationEmail(user.Email!, callbackUrl);
                     TempData["SuccessMessage"] = "Confirmation email resent successfully!";
-                    TempData["Email"] = email; // For potential re-resend
+                    TempData["Email"] = email;
                 }
                 else
                 {
-                    TempData["ErrorMessage"] = "Failed to generate confirmation link. Please try again later.";
+                    _logger.LogError("Failed to generate callback URL for email confirmation for {Email}", email);
+                    TempData["ErrorMessage"] = "Account created, but failed to generate confirmation link. Please try again later.";
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to resend confirmation email to {Email}", user.Email);
+                _logger.LogError(ex, "Error sending confirmation email to {Email}", email);
                 TempData["ErrorMessage"] = "Failed to resend confirmation email. Please try again later.";
             }
 
             return RedirectToAction("RegisterConfirmation");
+        }
+
+        #endregion
+
+        #region Other Actions / Helper Methods
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult Lockout()
+        {
+            return View();
         }
 
         private IActionResult RedirectToLocal(string? returnUrl)
@@ -380,16 +494,6 @@ namespace EHRsystem.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        private void PopulateRolesList(RegisterViewModel model)
-        {
-            var roles = _roleManager.Roles
-                .Where(r => r.Name != "SuperAdmin") // Prevent creating superadmins
-                .Select(r => r.Name)
-                .ToList();
-
-            model.AvailableRoles = roles.Select(r => new SelectListItem { Value = r, Text = r }).ToList(); // Convert to SelectListItem
-        }
-
         private IActionResult RedirectBasedOnRole(IList<string> userRoles, string? returnUrl)
         {
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
@@ -397,86 +501,50 @@ namespace EHRsystem.Controllers
                 return Redirect(returnUrl);
             }
 
-            // Redirect based on primary role (order matters here if a user has multiple roles)
+            // Prioritize roles for redirection
             if (userRoles.Contains("Admin"))
             {
-                return RedirectToAction("Dashboard", "Admin");
+                return RedirectToAction("ManageUsers", "Admin");
             }
-            if (userRoles.Contains("Doctor"))
+            else if (userRoles.Contains("Doctor"))
             {
-                return RedirectToAction("Dashboard", "Doctor");
+                return RedirectToAction("DoctorDashboard", "Dashboard"); // Assuming a DashboardController with DoctorDashboard
             }
-            if (userRoles.Contains("Nurse"))
+            else if (userRoles.Contains("Patient"))
             {
-                return RedirectToAction("Dashboard", "Nurse");
-            }
-            if (userRoles.Contains("Patient"))
-            {
-                return RedirectToAction("Dashboard", "Patient");
+                return RedirectToAction("PatientDashboard", "Dashboard"); // Assuming a DashboardController with PatientDashboard
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home"); // Fallback
         }
 
-        private async Task LogUserActivity(string userId, string action, string details)
+        private async Task LogUserActivity(string? userId, string activityType, string details)
         {
-            try
+            var auditLog = new UserAuditLog
             {
-                var auditLog = new UserAuditLog
-                {
-                    UserId = userId,
-                    Action = action,
-                    Details = details,
-                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                    UserAgent = Request.Headers["User-Agent"].ToString(),
-                    Timestamp = DateTime.UtcNow
-                };
-
-                _context.UserAuditLogs.Add(auditLog);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to log user activity for user {UserId}", userId);
-            }
+                UserId = userId ?? "N/A",
+                Timestamp = DateTime.UtcNow,
+                ActivityType = activityType,
+                Details = details,
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
+            };
+            _dbContext.UserAuditLogs.Add(auditLog);
+            await _dbContext.SaveChangesAsync();
         }
 
-        private async Task LogFailedLoginAttempt(string email, string reason)
+        private async Task LogFailedLoginAttempt(string email, string details)
         {
-            try
+            var auditLog = new UserAuditLog
             {
-                var auditLog = new UserAuditLog
-                {
-                    UserId = email, // Use email as identifier for failed attempts
-                    Action = "FailedLogin",
-                    Details = $"Failed login attempt: {reason}",
-                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                    UserAgent = Request.Headers["User-Agent"].ToString(),
-                    Timestamp = DateTime.UtcNow
-                };
-
-                _context.UserAuditLogs.Add(auditLog);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to log failed login attempt for {Email}", email);
-            }
+                UserId = "N/A",
+                Timestamp = DateTime.UtcNow,
+                ActivityType = "Login Failed",
+                Details = $"Attempted login for: {email}. Reason: {details}",
+                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString()
+            };
+            _dbContext.UserAuditLogs.Add(auditLog);
+            await _dbContext.SaveChangesAsync();
         }
-
-        // Example modification for SendConfirmationEmail (find your actual method and adjust)
-        private async Task<bool> SendEmailConfirmation(ApplicationUser user, string callbackUrl)
-        {
-            // Fix CS8604: Ensure user.Email is not null before sending.
-            if (user.Email != null) 
-            {
-                await _emailSender.SendConfirmationEmail(user.Email, callbackUrl);
-                return true;
-            }
-            _logger.LogWarning("Attempted to send confirmation email to null email for user {UserId}", user.Id);
-            return false;
-        }
-
-        #endregion
     }
 }
+#endregion

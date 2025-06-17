@@ -1,238 +1,68 @@
-@model EHRsystem.Models.ViewModels.LoginViewModel
+@model EHRsystem.Models.ViewModels.LoginViewModel 
 
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <img src="~/images/logo-medical.png" alt="EHR System Logo" class="auth-logo">
-            <h2 class="auth-title">Secure Login</h2>
-            <p class="auth-subtitle">Access your medical records and appointments</p>
+@{
+    ViewData["Title"] = "Log in";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Keep this line as per your provided code
+}
+
+
+
+<div class="relative min-h-screen flex items-center justify-center px-4 overflow-hidden
+            bg-gradient-to-br from-blue-100 to-indigo-50"> @* Removed py-16 for better vertical centering *@
+    <!-- Background Circles/Shapes for visual interest, similar to homepage hero -->
+    <div class="absolute top-0 -left-20 w-80 h-80 bg-blue-300 opacity-20 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+    <div class="absolute -bottom-10 right-0 w-96 h-96 bg-indigo-200 opacity-20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+    <div class="absolute -top-10 right-40 w-72 h-72 bg-purple-200 opacity-20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+
+    <div class="w-full max-w-md bg-white p-8 md:p-10 rounded-xl shadow-xl border-t-4 border-blue-600 relative z-10"> @* z-10 to keep form above background shapes *@
+        <h1 class="text-4xl font-extrabold text-gray-800 mb-6 text-center">Log In</h1>
+        <p class="text-gray-600 text-center mb-8">Access your personalized health portal.</p>
+
+        @* Removed the 'grid grid-cols-1 gap-8' div as it's no longer necessary with a single column *@
+        <!-- Local Account Login Section -->
+        <div> @* Retaining this div as a semantic container for the local login section content *@
+            <h2 class="text-2xl font-bold text-gray-700 mb-4">Use your account credentials.</h2> @* Updated heading text *@
+            <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+                @* Removed asp-validation-summary="All" - individual field errors will still show below inputs *@
+
+                <div class="mb-4">
+                    <label for="Email" class="block text-gray-700 text-sm font-semibold mb-2">Email</label>
+                    <input type="email" id="Email" name="Email" value="@ViewBag.Email" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" placeholder="Enter your email" />
+                    @if (ViewData.ModelState["Email"]?.Errors?.Count > 0)
+                    {
+                        <span class="text-red-600 text-xs mt-1">@ViewData.ModelState["Email"]!.Errors.First().ErrorMessage</span>
+                    }
+                </div>
+
+                <div class="mb-6">
+                    <label for="Password" class="block text-gray-700 text-sm font-semibold mb-2">Password</label>
+                    <input type="password" id="Password" name="Password" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200" placeholder="Enter your password" />
+                    @if (ViewData.ModelState["Password"]?.Errors?.Count > 0)
+                    {
+                        <span class="text-red-600 text-xs mt-1">@ViewData.ModelState["Password"]!.Errors.First().ErrorMessage</span>
+                    }
+                </div>
+
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="RememberMe" name="RememberMe" value="true" @(ViewBag.RememberMe == true ? "checked" : "") class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                        <input type="hidden" name="RememberMe" value="false" /> @* Hidden input for unchecked checkbox value handling *@
+                        <label for="RememberMe" class="ml-2 block text-gray-700 text-sm">Remember me</label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary w-full">Log in</button>
+
+                <div class="mt-6 text-center text-sm">
+                    <a href="/Account/ForgotPassword" class="text-blue-600 hover:underline block mb-2">Forgot your password?</a>
+                    <a href="/Account/Register" class="text-blue-600 hover:underline block mb-2">Register as a new user</a>
+                    <a href="/Account/ResendConfirmation" class="text-blue-600 hover:underline block">Resend email confirmation</a>
+                </div>
+            </form>
         </div>
-
-        <form asp-action="Login" method="post" class="auth-form">
-            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-            
-            <div class="form-group">
-                <label asp-for="Email" class="form-label"></label>
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="bi bi-envelope"></i>
-                    </span>
-                    <input asp-for="Email" class="form-control" 
-                           placeholder="your.email@example.com" />
-                </div>
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <div class="d-flex justify-content-between">
-                    <label asp-for="Password" class="form-label"></label>
-                    <a asp-action="ForgotPassword" class="forgot-password-link">
-                        Forgot password?
-                    </a>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="bi bi-lock"></i>
-                    </span>
-                    <input asp-for="Password" type="password" class="form-control" 
-                           placeholder="Enter your password" />
-                    <button type="button" class="btn btn-outline-secondary password-toggle">
-                        <i class="bi bi-eye"></i>
-                    </button>
-                </div>
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-
-            <div class="form-group form-check">
-                <input asp-for="RememberMe" class="form-check-input" />
-                <label asp-for="RememberMe" class="form-check-label">
-                    Remember me on this device
-                </label>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-auth w-100">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Login
-            </button>
-
-            <div class="auth-divider">
-                <span>or continue with</span>
-            </div>
-
-            <div class="social-login">
-                <button type="button" class="btn btn-outline-secondary social-btn">
-                    <i class="bi bi-google"></i> Google
-                </button>
-                <button type="button" class="btn btn-outline-secondary social-btn">
-                    <i class="bi bi-microsoft"></i> Microsoft
-                </button>
-            </div>
-            
-            <div class="auth-footer text-center mt-3">
-                <p class="mb-0">
-                    Don't have an account? 
-                    <a asp-action="Register" class="auth-link">Create account</a>
-                </p>
-                <div class="mt-2">
-                    <a href="#" class="text-muted small">
-                        <i class="bi bi-shield-lock me-1"></i>HIPAA Compliance Information
-                    </a>
-                </div>
-            </div>
-        </form>
-    </div>
-    
-    <div class="security-notice">
-        <i class="bi bi-shield-check"></i>
-        <span>All data is encrypted and HIPAA compliant</span>
     </div>
 </div>
 
-@section Styles {
-    <style>
-        .auth-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-            padding: 20px;
-        }
-        
-        .auth-card {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-            width: 100%;
-            max-width: 450px;
-            overflow: hidden;
-        }
-        
-        .auth-header {
-            background: linear-gradient(120deg, #1a6fc4, #0d47a1);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-        
-        .auth-logo {
-            height: 60px;
-            margin-bottom: 15px;
-        }
-        
-        .auth-title {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .auth-subtitle {
-            opacity: 0.9;
-            font-size: 0.95rem;
-        }
-        
-        .auth-form {
-            padding: 30px;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .input-group-text {
-            background-color: #f1f5f9;
-        }
-        
-        .password-toggle {
-            cursor: pointer;
-        }
-        
-        .forgot-password-link {
-            font-size: 0.85rem;
-        }
-        
-        .btn-auth {
-            padding: 10px;
-            font-weight: 600;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-        
-        .auth-divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: #6c757d;
-            margin: 25px 0;
-            font-size: 0.9rem;
-        }
-        
-        .auth-divider::before,
-        .auth-divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .auth-divider::before {
-            margin-right: 10px;
-        }
-        
-        .auth-divider::after {
-            margin-left: 10px;
-        }
-        
-        .social-login {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .social-btn {
-            flex: 1;
-            border-radius: 8px;
-            padding: 10px;
-        }
-        
-        .auth-footer {
-            font-size: 0.9rem;
-        }
-        
-        .auth-link {
-            font-weight: 600;
-            text-decoration: none;
-        }
-        
-        .security-notice {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
-}
-
 @section Scripts {
-    <script>
-        $(document).ready(function() {
-            // Password toggle functionality
-            $('.password-toggle').click(function() {
-                const passwordInput = $(this).closest('.input-group').find('input');
-                const type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
-                passwordInput.attr('type', type);
-                
-                // Toggle eye icon
-                $(this).find('i').toggleClass('bi-eye bi-eye-slash');
-            });
-            
-            // Auto-focus on email field
-            $('#Email').focus();
-        });
-    </script>
+    <partial name="_ValidationScriptsPartial" />
 }

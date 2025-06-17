@@ -1,18 +1,379 @@
-body {
-    margin: 0;
-    padding: 0;
+/* CSS Custom Properties */
+:root {
+    --primary-color: #3B82F6;
+    --primary-color-rgb: 59, 130, 246;
+    --primary-gradient-end: #1E40AF; /* New variable for consistent primary gradient end */
+    --secondary-color: #10B981;
+    --secondary-color-rgb: 16, 185, 129;
+    --accent-color: #F59E0B;
+    --accent-color-rgb: 245, 158, 11;
+    --danger-color: #dc3545; /* Existing danger color */
+    --warning-color: #ffc107; /* Existing warning color */
+    --dark-text: #1F2937;
+    --light-bg: #F9FAFB;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
+/* Base styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--dark-text);
+    background-color: var(--light-bg); /* Ensure body background is set */
 }
-:root {
-    --primary-color: #2c5aa0; /* Darker Blue */
-    --secondary-color: #28a745; /* Green */
-    --accent-color: #17a2b8; /* Teal */
-    --danger-color: #dc3545; /* Red */
-    --warning-color: #ffc107; /* Orange */
-    --light-bg: #f8f9fa; /* Light Grey */
-    --dark-text: #333; /* Dark Grey */
+
+/* Navbar styles */
+.navbar {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.nav-link {
+    color: var(--dark-text);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    padding: 0.5rem 1rem; /* Ensure consistent padding for all nav links */
+    border-radius: 5px; /* Rounded corners for nav links */
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--primary-color);
+    background-color: rgba(0, 0, 0, 0.05); /* Light background on hover/active */
+}
+
+/* Responsive navbar toggle */
+.navbar-toggler {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--dark-text);
+}
+
+.navbar-toggler-icon {
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+}
+
+/* Button styles */
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+    border: none; /* Ensure no default border */
+}
+
+.btn-primary:hover {
+    background: var(--primary-gradient-end);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.3); /* Use RGB for shadow color */
+}
+
+.btn-solid-white-custom {
+    background: white;
+    color: var(--primary-color);
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-solid-white-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.btn-outline-white-custom {
+    border: 2px solid white;
+    color: white;
+    background: transparent;
+    padding: 1rem 2rem;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-outline-white-custom:hover {
+    background: white;
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+/* Background utilities */
+.primary-bg {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-gradient-end) 100%);
+}
+
+.secondary-bg {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, #059669 100%);
+}
+
+.accent-bg {
+    background: linear-gradient(135deg, var(--accent-color) 0%, #D97706 100%);
+}
+
+.danger-bg { /* Added for consistency if needed for service cards */
+    background: linear-gradient(135deg, var(--danger-color) 0%, #B91C1C 100%);
+}
+
+.warning-bg { /* Added for consistency if needed for service cards */
+    background: linear-gradient(135deg, var(--warning-color) 0%, #EAB308 100%);
+}
+
+/* Service card styles (Flip effect) */
+.service-card-wrapper {
+    perspective: 1000px; /* Needed for 3D transform */
+    height: 300px; /* Fixed height for consistent squares */
+    position: relative; /* Ensure inner is positioned correctly */
+    overflow: hidden; /* Hide overflowing content during flip */
+    border-radius: 1rem; /* Consistent border-radius with inner */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Consistent shadow */
+    border-top: 4px solid; /* For colored top border from the HTML */
+}
+
+.service-card-inner {
+    position: absolute; /* Take up full space of wrapper */
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s; /* Smooth flip transition */
+    transform-style: preserve-3d; /* Enable 3D transform for children */
+}
+
+.service-card-wrapper:hover .service-card-inner {
+    transform: rotateY(180deg); /* Flip on hover */
+}
+
+.service-card-front, .service-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* For Safari */
+    backface-visibility: hidden; /* Hide the back of the element when facing away */
+    border-radius: 1rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box; /* Include padding in dimensions */
+}
+
+.service-card-front {
+    background: white;
+    /* Box-shadow moved to .service-card-wrapper for consistent visual */
+}
+
+.service-card-back {
+    transform: rotateY(180deg); /* Start rotated for the back face */
+    color: white;
+}
+
+/* Animations */
+@keyframes blob {
+    0% {
+        transform: translate(0px, 0px) scale(1);
+    }
+    33% {
+        transform: translate(30px, -50px) scale(1.1);
+    }
+    66% {
+        transform: translate(-20px, 20px) scale(0.9);
+    }
+    100% {
+        transform: translate(0px, 0px) scale(1);
+    }
+}
+
+.animate-blob {
+    animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+    animation-delay: 4s;
+}
+
+/* User Info & Dropdown Styles (from previous context, keeping for completeness) */
+.user-info {
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+}
+
+.dropdown-menu {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.dropdown-item {
+    padding: 0.7rem 1.5rem;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--light-bg);
+}
+
+/* Main Content & Footer Styles (from previous context, keeping for completeness) */
+.main-content {
+    min-height: calc(100vh - 140px); /* Adjust based on your header/footer heights */
+    padding-top: 2rem;
+}
+
+footer {
+    background-color: #111827; /* Dark background as specified */
+    color: white; /* Ensure text is visible */
+    padding: 2rem 0 1rem 0;
+    margin-top: auto;
+}
+
+footer a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: var(--primary-color) !important;
+}
+
+
+/* Status Indicators (from previous context, keeping for completeness) */
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.status-online { 
+    background-color: var(--secondary-color); 
+}
+
+.status-busy { 
+    background-color: var(--danger-color); 
+}
+
+.status-away { 
+    background-color: var(--warning-color); 
+}
+
+/* Notification Badge (from previous context, keeping for completeness) */
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--danger-color);
+    color: white;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-icon {
+    position: relative;
+    display: inline-block;
+}
+
+/* Breadcrumb Styles (from previous context, keeping for completeness) */
+.breadcrumb {
+    background-color: transparent;
+    padding: 1rem 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: var(--primary-color);
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .navbar-nav {
+        display: none; /* Hide navigation items by default on small screens */
+    }
+    
+    .hero-title {
+        font-size: 2.5rem; /* Adjust font size for smaller screens */
+    }
+    
+    .service-card-wrapper {
+        height: auto; /* Allow height to adjust on mobile */
+        min-height: 250px; /* Ensure minimum height on mobile */
+    }
+}
+
+/* Additional responsive breakpoints */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .hero-title {
+        font-size: 3rem; /* Medium screen font size adjustment */
+    }
+}
+
+@media (min-width: 1025px) {
+    .hero-title {
+        font-size: 4rem; /* Large screen font size adjustment */
+    }
+}
+
+/* Stats section */
+.stats-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+.stats-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+/* Text utilities */
+.text-dark-text {
+    color: var(--dark-text);
 }

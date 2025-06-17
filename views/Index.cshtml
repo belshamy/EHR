@@ -1,61 +1,191 @@
-@model EHRsystem.Models.Entities.Patient
 @{
-    ViewData["Title"] = "Medical Portal - EHR System";
+    ViewData["Title"] = "Home Page";
 }
 
-<div class="hero-section">
-    <div class="container">
-        <div class="row align-items-center min-vh-75">
-            <div class="col-lg-6">
-                <!-- ... other content ... -->
-                <div class="d-flex gap-3 mb-4">
-                    @if (User?.Identity != null && User.Identity.IsAuthenticated)
-                    {  <!-- FIXED: Added brace -->
-                        <a href="@Url.Action("Index", "Appointment")" class="btn btn-primary btn-lg">
-                            <i class="fas fa-calendar-check me-2"></i>View Appointments
-                        </a>
-                        <a href="#dashboard" class="btn btn-outline-primary btn-lg">
-                            <i class="fas fa-chart-line me-2"></i>Dashboard
-                        </a>
-                    }
-                    else
-                    {  <!-- FIXED: Added brace -->
-                        <a href="@Url.Action("Login", "Account")" class="btn btn-primary btn-lg">
-                            <i class="fas fa-sign-in-alt me-2"></i>Login
-                        </a>
-                        <a href="@Url.Action("Register", "Account")" class="btn btn-outline-primary btn-lg">
-                            <i class="fas fa-user-plus me-2"></i>Register
-                        </a>
-                    }
+<!-- Hero Section -->
+<section class="relative text-white py-20 px-4 overflow-hidden rounded-bl-3xl rounded-br-3xl mb-12"
+         style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-gradient-end) 100%);">
+    <!-- Background Circles/Shapes for visual interest -->
+    <div class="absolute top-0 -left-20 w-80 h-80 bg-blue-300 opacity-20 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+    <div class="absolute -bottom-10 right-0 w-96 h-96 bg-indigo-200 opacity-20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+    <div class="absolute -top-10 right-40 w-72 h-72 bg-purple-200 opacity-20 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+
+    <div class="container mx-auto flex flex-col md:flex-row items-center justify-between relative z-10">
+        <div class="md:w-1/2 text-center md:text-left mb-8 md:mb-0">
+            <h1 class="hero-title text-5xl md:text-6xl font-extrabold leading-tight mb-6">
+                Your <span style="color: rgba(255,255,255,0.7);">Health</span>, Our Priority.
+            </h1>
+            <p class="text-lg opacity-90 mb-8 max-w-lg mx-auto md:mx-0">
+                Seamlessly manage your appointments, access medical records, and connect with trusted healthcare professionals.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <a href="@Url.Action("Index", "Appointment")" class="btn-solid-white-custom">
+                    Book an Appointment
+                </a>
+                <a href="@Url.Action("Index", "Doctors")" class="btn-outline-white-custom">
+                    Find a Doctor
+                </a>
+            </div>
+        </div>
+        <div class="md:w-1/2 flex justify-center">
+            <img src="https://placehold.co/500x350/E0F2F7/0D47A1?text=Modern+Health+Illustration" alt="Health Illustration" class="rounded-xl shadow-2xl max-w-full h-auto">
+        </div>
+    </div>
+</section>
+
+<!-- Features/Services Section -->
+<section class="container mx-auto px-4 py-16">
+    <h2 class="text-4xl font-bold text-center mb-12 text-dark-text">Our Comprehensive Services</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Service Card 1: Easy Appointments -->
+        <div class="service-card-wrapper border-t-4" style="border-color: var(--primary-color);">
+            <div class="service-card-inner">
+                <div class="service-card-front">
+                    <div class="rounded-full p-4 mb-4 text-3xl" style="background-color: rgba(var(--primary-color-rgb), 0.1); color: var(--primary-color);">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-dark-text">Easy Appointments</h3>
+                    <p class="text-gray-600">Hover to learn more</p>
+                </div>
+                <div class="service-card-back primary-bg">
+                    <h3 class="text-2xl font-semibold mb-3">Easy Appointments</h3>
+                    <p class="text-white opacity-90 mb-4">Schedule, reschedule, or cancel appointments with ease, 24/7 from your personal portal.</p>
+                    <a href="@Url.Action("Index", "Appointment")" class="btn-outline-white-custom">Learn More</a>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <!-- ... hero image ... -->
+        </div>
+
+        <!-- Service Card 2: Secure Medical Records -->
+        <div class="service-card-wrapper border-t-4" style="border-color: var(--secondary-color);">
+            <div class="service-card-inner">
+                <div class="service-card-front">
+                    <div class="rounded-full p-4 mb-4 text-3xl" style="background-color: rgba(var(--secondary-color-rgb), 0.1); color: var(--secondary-color);">
+                        <i class="fas fa-file-medical"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-dark-text">Secure Medical Records</h3>
+                    <p class="text-gray-600">Hover to learn more</p>
+                </div>
+                <div class="service-card-back secondary-bg">
+                    <h3 class="text-2xl font-semibold mb-3">Secure Medical Records</h3>
+                    <p class="text-white opacity-90 mb-4">Access your complete health history, prescriptions, and lab results securely anytime.</p>
+                    <a href="@Url.Action("Index", "MedicalRecords")" class="btn-outline-white-custom">Learn More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Card 3: Telehealth Consults -->
+        <div class="service-card-wrapper border-t-4" style="border-color: var(--accent-color);">
+            <div class="service-card-inner">
+                <div class="service-card-front">
+                    <div class="rounded-full p-4 mb-4 text-3xl" style="background-color: rgba(var(--accent-color-rgb), 0.1); color: var(--accent-color);">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-dark-text">Telehealth Consults</h3>
+                    <p class="text-gray-600">Hover to learn more</p>
+                </div>
+                <div class="service-card-back accent-bg">
+                    <h3 class="text-2xl font-semibold mb-3">Telehealth Consults</h3>
+                    <p class="text-white opacity-90 mb-4">Connect with healthcare providers from the comfort of your home through secure video calls.</p>
+                    <a href="@Url.Action("Index", "Telehealth")" class="btn-outline-white-custom">Learn More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Card 4: Prescription Management -->
+        <div class="service-card-wrapper border-t-4" style="border-color: var(--primary-color);">
+            <div class="service-card-inner">
+                <div class="service-card-front">
+                    <div class="rounded-full p-4 mb-4 text-3xl" style="background-color: rgba(var(--primary-color-rgb), 0.1); color: var(--primary-color);">
+                        <i class="fas fa-pills"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-dark-text">Prescription Management</h3>
+                    <p class="text-gray-600">Hover to learn more</p>
+                </div>
+                <div class="service-card-back primary-bg">
+                    <h3 class="text-2xl font-semibold mb-3">Prescription Management</h3>
+                    <p class="text-white opacity-90 mb-4">Manage your medications, set reminders, and request refills easily through our platform.</p>
+                    <a href="@Url.Action("Index", "Prescriptions")" class="btn-outline-white-custom">Learn More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Card 5: Lab Results -->
+        <div class="service-card-wrapper border-t-4" style="border-color: var(--secondary-color);">
+            <div class="service-card-inner">
+                <div class="service-card-front">
+                    <div class="rounded-full p-4 mb-4 text-3xl" style="background-color: rgba(var(--secondary-color-rgb), 0.1); color: var(--secondary-color);">
+                        <i class="fas fa-flask"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-dark-text">Lab Results</h3>
+                    <p class="text-gray-600">Hover to learn more</p>
+                </div>
+                <div class="service-card-back secondary-bg">
+                    <h3 class="text-2xl font-semibold mb-3">Lab Results</h3>
+                    <p class="text-white opacity-90 mb-4">View your lab results as soon as they're available, with easy-to-understand explanations.</p>
+                    <a href="@Url.Action("Index", "LabResults")" class="btn-outline-white-custom">Learn More</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Card 6: Health Monitoring -->
+        <div class="service-card-wrapper border-t-4" style="border-color: var(--accent-color);">
+            <div class="service-card-inner">
+                <div class="service-card-front">
+                    <div class="rounded-full p-4 mb-4 text-3xl" style="background-color: rgba(var(--accent-color-rgb), 0.1); color: var(--accent-color);">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold mb-3 text-dark-text">Health Monitoring</h3>
+                    <p class="text-gray-600">Hover to learn more</p>
+                </div>
+                <div class="service-card-back accent-bg">
+                    <h3 class="text-2xl font-semibold mb-3">Health Monitoring</h3>
+                    <p class="text-white opacity-90 mb-4">Track your vital signs, symptoms, and health metrics to stay on top of your wellness journey.</p>
+                    <a href="@Url.Action("Index", "HealthMonitoring")" class="btn-outline-white-custom">Learn More</a>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-@if (User?.Identity != null && User.Identity.IsAuthenticated)
-{  <!-- FIXED: Added brace -->
-    <div class="dashboard-section py-5" id="dashboard">
-        <!-- ... dashboard content ... -->
+<!-- Stats Section -->
+<section class="py-16 px-4" style="background-color: var(--light-bg);">
+    <div class="container mx-auto">
+        <h2 class="text-4xl font-bold text-center mb-12 text-dark-text">Trusted by Thousands</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="stats-card">
+                <div class="stats-number">15K+</div>
+                <h3 class="text-xl font-semibold mb-2">Happy Patients</h3>
+                <p class="text-gray-600">Served across the region</p>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number">500+</div>
+                <h3 class="text-xl font-semibold mb-2">Expert Doctors</h3>
+                <p class="text-gray-600">Specialized healthcare professionals</p>
+            </div>
+            <div class="stats-card">
+                <div class="stats-number">24/7</div>
+                <h3 class="text-xl font-semibold mb-2">Support Available</h3>
+                <p class="text-gray-600">Round-the-clock assistance</p>
+            </div>
+        </div>
     </div>
-}  <!-- FIXED: Added closing brace -->
+</section>
 
-<!-- ... features section ... -->
-
-@if (User?.Identity == null || !User.Identity.IsAuthenticated)
-{  <!-- FIXED: Added brace -->
-    <div class="cta-section py-5">
-        <!-- ... CTA content ... -->
+<!-- CTA Section -->
+<section class="py-16 px-4 primary-bg text-white">
+    <div class="container mx-auto text-center">
+        <h2 class="text-4xl font-bold mb-6">Ready to Take Control of Your Health?</h2>
+        <p class="text-xl opacity-90 mb-8 max-w-2xl mx-auto">
+            Join thousands of patients who trust us with their healthcare journey. 
+            Get started today and experience the future of healthcare management.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="@Url.Action("Register", "Account")" class="btn-solid-white-custom">
+                Get Started Today
+            </a>
+            <a href="@Url.Action("Index", "Contact")" class="btn-outline-white-custom">
+                Contact Us
+            </a>
+        </div>
     </div>
-}  <!-- FIXED: Added closing brace -->
-
-<style>
-    /* ... your CSS ... */
-</style>
-
-<script>
-    // ... your JavaScript ...
-</script>
+</section>
